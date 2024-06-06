@@ -49,7 +49,7 @@
       .replace(/\//g, "÷")
       .replace(/\./g, ",")
       .replace(/\*/g, "×");
-      displayValue = formatEquation(displayValue);
+    displayValue = formatEquation(displayValue);
   }
 
   function clearDisplay() {
