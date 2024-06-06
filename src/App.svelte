@@ -13,20 +13,33 @@
       errorOccured = false;
     }
     backendVal += value;
+    backendVal = insertMultiplicationSymbol(backendVal);
     transform();
+  }
+
+  function formatEquation(equation: string): string {
+    // Regular expression to match numbers and operators
+    const regex = /(\d+|\+|-|\*|\/)/g;
+
+    // Function to format numbers with dots
+    const formatNumber = (num: string): string => {
+      return num.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
+
+    // Split the equation into parts and format numbers
+    return equation.replace(regex, (match) => {
+      return /\d/.test(match) ? formatNumber(match) : match;
+    });
   }
 
   function insertMultiplicationSymbol(expression: any) {
     let result = "";
     for (let i = 0; i < expression.length; i++) {
-      // Wenn der aktuelle Charakter eine öffnende Klammer ist
       if (expression[i] === "(") {
-        // Überprüfe, ob der vorherige Charakter eine Zahl ist
         if (i > 0 && !isNaN(expression[i - 1])) {
           result += "*";
         }
       }
-      // Füge den aktuellen Charakter zum Resultat hinzu
       result += expression[i];
     }
     return result;
@@ -36,6 +49,7 @@
       .replace(/\//g, "÷")
       .replace(/\./g, ",")
       .replace(/\*/g, "×");
+      displayValue = formatEquation(displayValue);
   }
 
   function clearDisplay() {
@@ -50,7 +64,6 @@
 
   function calculate() {
     try {
-      backendVal = insertMultiplicationSymbol(backendVal);
       backendVal = String(eval(backendVal.replace("÷", "/").replace("×", "*")));
       transform();
     } catch (error) {
@@ -60,6 +73,64 @@
     }
   }
 
+  function onKeyDown(e: any) {
+    switch (e.key) {
+      case "Backspace":
+        deleteChar();
+        break;
+      case "=":
+        calculate();
+        break;
+      case "Enter":
+        calculate();
+        break;
+      case "c":
+        clearDisplay();
+        break;
+      case "0":
+        appendValue(e.key);
+        break;
+      case "1":
+        appendValue(e.key);
+        break;
+      case "2":
+        appendValue(e.key);
+        break;
+      case "3":
+        appendValue(e.key);
+        break;
+      case "4":
+        appendValue(e.key);
+        break;
+      case "5":
+        appendValue(e.key);
+        break;
+      case "6":
+        appendValue(e.key);
+        break;
+      case "7":
+        appendValue(e.key);
+        break;
+      case "8":
+        appendValue(e.key);
+        break;
+      case "9":
+        appendValue(e.key);
+        break;
+      case "+":
+        appendValue(e.key);
+        break;
+      case "-":
+        appendValue(e.key);
+        break;
+      case "*":
+        appendValue(e.key);
+        break;
+      case "/":
+        appendValue(e.key);
+        break;
+    }
+  }
   onMount(() => {
     setTimeout(() => {
       loading = false;
@@ -109,3 +180,5 @@
     </div>
   {/if}
 </main>
+
+<svelte:window on:keydown|preventDefault={onKeyDown} />
