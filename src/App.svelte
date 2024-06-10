@@ -18,15 +18,12 @@
   }
 
   function formatEquation(equation: string): string {
-    // Regular expression to match numbers and operators
     const regex = /(\d+|\+|-|\*|\/)/g;
 
-    // Function to format numbers with dots
     const formatNumber = (num: string): string => {
       return num.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     };
 
-    // Split the equation into parts and format numbers
     return equation.replace(regex, (match) => {
       return /\d/.test(match) ? formatNumber(match) : match;
     });
@@ -129,6 +126,15 @@
       case "/":
         appendValue(e.key);
         break;
+      case "(":
+        appendValue(e.key);
+        break;
+      case ")":
+        appendValue(e.key);
+        break;
+      case ",":
+        appendValue(".");
+        break;
     }
   }
   onMount(() => {
@@ -171,7 +177,7 @@
             <button class="btn" on:click={() => appendValue("3")}>3</button>
             <button class="btn" on:click={() => appendValue("-")}>-</button>
             <button class="btn" on:click={() => appendValue("0")}>0</button>
-            <button class="btn" on:click={() => appendValue(".")}>.</button>
+            <button class="btn" on:click={() => appendValue(".")}>,</button>
             <button class="btn" on:click={calculate}>=</button>
             <button class="btn" on:click={() => appendValue("+")}>+</button>
           </div>
