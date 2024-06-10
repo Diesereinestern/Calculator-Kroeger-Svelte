@@ -18,7 +18,7 @@
   }
 
   function formatEquation(equation: string): string {
-    const regex = /(\d+|\+|-|\*|\/)/g;
+    const regex = /(\d+|\+|-|\*|\/|\^)/g;
 
     const formatNumber = (num: string): string => {
       return num.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -41,11 +41,13 @@
     }
     return result;
   }
+
   function transform() {
     displayValue = backendVal
       .replace(/\//g, "÷")
       .replace(/\./g, ",")
-      .replace(/\*/g, "×");
+      .replace(/\*/g, "×")
+      .replace(/\^/g, "^");
     displayValue = formatEquation(displayValue);
   }
 
@@ -61,7 +63,7 @@
 
   function calculate() {
     try {
-      backendVal = String(eval(backendVal.replace("÷", "/").replace("×", "*")));
+      backendVal = String(eval(backendVal.replace("÷", "/").replace("×", "*").replace(/\^/g, "**")));
       transform();
     } catch (error) {
       console.error(error);
@@ -135,8 +137,12 @@
       case ",":
         appendValue(".");
         break;
+      case "^":
+        appendValue(e.key);
+        break;
     }
   }
+
   onMount(() => {
     setTimeout(() => {
       loading = false;
@@ -149,9 +155,7 @@
     <PageLoader />
   {:else}
     <div class="content show">
-      <div
-        class="calculator bg-gray-800 rounded-lg p-8 shadow-lg text-white text-center flex"
-      >
+      <div class="calculator bg-gray-800 rounded-lg p-8 shadow-lg text-white text-center flex">
         <div>
           <input
             type="text"
@@ -180,6 +184,7 @@
             <button class="btn" on:click={() => appendValue(".")}>,</button>
             <button class="btn" on:click={calculate}>=</button>
             <button class="btn" on:click={() => appendValue("+")}>+</button>
+            <button class="btn" on:click={() => appendValue("^")}>^</button> <!-- Potenzierungssymbol hinzufügen -->
           </div>
         </div>
       </div>
