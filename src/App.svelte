@@ -18,7 +18,7 @@
   }
 
   function formatEquation(equation: string): string {
-    const regex = /(\d+|\+|-|\*|\/|\^)/g;
+    const regex = /(\d+|\+|-|\*|\/|\^|\*\*|√\(\d*\))/g;
 
     const formatNumber = (num: string): string => {
       return num.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -47,7 +47,9 @@
       .replace(/\//g, "÷")
       .replace(/\./g, ",")
       .replace(/\*/g, "×")
-      .replace(/\^/g, "^");
+      .replace(/\^/g, "^")
+      .replace(/Math.sqrt\(/g, "√(")
+      .replace(/\)/g, ")");
     displayValue = formatEquation(displayValue);
   }
 
@@ -63,7 +65,7 @@
 
   function calculate() {
     try {
-      backendVal = String(eval(backendVal.replace("÷", "/").replace("×", "*").replace(/\^/g, "**")));
+      backendVal = String(eval(backendVal.replace("÷", "/").replace("×", "*").replace(/\^/g, "**").replace(/√/g, "Math.sqrt")));
       transform();
     } catch (error) {
       console.error(error);
@@ -140,6 +142,49 @@
       case "^":
         appendValue(e.key);
         break;
+      case "r":
+        appendSquareRoot();
+        break;
+    }
+  }
+
+  function appendSquare() {
+    if (errorOccured) {
+      clearDisplay();
+      errorOccured = false;
+    }
+    try {
+      const lastNumberMatch = backendVal.match(/(\d+(\.\d+)?|\.\d+)(?=\D*$)/);
+      if (lastNumberMatch) {
+        const lastNumber = lastNumberMatch[0];
+        const square = Math.pow(parseFloat(lastNumber), 2);
+        backendVal = backendVal.replace(/(\d+(\.\d+)?|\.\d+)(?=\D*$)/, square.toString());
+        transform();
+      }
+    } catch (error) {
+      console.error(error);
+      displayValue = "Error";
+      errorOccured = true;
+    }
+  }
+
+  function appendSquareRoot() {
+    if (errorOccured) {
+      clearDisplay();
+      errorOccured = false;
+    }
+    try {
+      const lastNumberMatch = backendVal.match(/(\d+(\.\d+)?|\.\d+)(?=\D*$)/);
+      if (lastNumberMatch) {
+        const lastNumber = lastNumberMatch[0];
+        const squareRoot = Math.sqrt(parseFloat(lastNumber));
+        backendVal = backendVal.replace(/(\d+(\.\d+)?|\.\d+)(?=\D*$)/, squareRoot.toString());
+        transform();
+      }
+    } catch (error) {
+      console.error(error);
+      displayValue = "Error";
+      errorOccured = true;
     }
   }
 
@@ -175,7 +220,7 @@
             <button class="btn" on:click={() => appendValue("4")}>4</button>
             <button class="btn" on:click={() => appendValue("5")}>5</button>
             <button class="btn" on:click={() => appendValue("6")}>6</button>
-            <button class="btn" on:click={() => appendValue("*")}>x</button>
+            <button class="btn" on:click={() => appendValue("*")}>×</button>
             <button class="btn" on:click={() => appendValue("1")}>1</button>
             <button class="btn" on:click={() => appendValue("2")}>2</button>
             <button class="btn" on:click={() => appendValue("3")}>3</button>
@@ -185,6 +230,8 @@
             <button class="btn" on:click={calculate}>=</button>
             <button class="btn" on:click={() => appendValue("+")}>+</button>
             <button class="btn" on:click={() => appendValue("^")}>^</button> <!-- Potenzierungssymbol hinzufügen -->
+            <button class="btn" on:click={appendSquare}>x²</button> <!-- Quadratsymbol hinzufügen -->
+            <button class="btn" on:click={appendSquareRoot}>√</button> <!-- Wurzelsymbol hinzufügen -->
           </div>
         </div>
       </div>
