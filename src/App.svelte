@@ -8,6 +8,13 @@
   let loading: boolean = true;
 
   function appendValue(value: string) {
+    const operators = ['+', '-', '*', '/'];
+
+    // Check if the last character is an operator and the new value is also an operator
+    if (operators.includes(backendVal.slice(-1)) && operators.includes(value)) {
+      return; // Do not append the value
+    }
+
     if (errorOccured) {
       clearDisplay();
       errorOccured = false;
@@ -65,7 +72,15 @@
 
   function calculate() {
     try {
-      backendVal = String(eval(backendVal.replace("÷", "/").replace("×", "*").replace(/\^/g, "**").replace(/√/g, "Math.sqrt")));
+      backendVal = String(
+        eval(
+          backendVal
+            .replace("÷", "/")
+            .replace("×", "*")
+            .replace(/\^/g, "**")
+            .replace(/√/g, "Math.sqrt")
+        )
+      );
       transform();
     } catch (error) {
       console.error(error);
@@ -158,7 +173,10 @@
       if (lastNumberMatch) {
         const lastNumber = lastNumberMatch[0];
         const square = Math.pow(parseFloat(lastNumber), 2);
-        backendVal = backendVal.replace(/(\d+(\.\d+)?|\.\d+)(?=\D*$)/, square.toString());
+        backendVal = backendVal.replace(
+          /(\d+(\.\d+)?|\.\d+)(?=\D*$)/,
+          square.toString()
+        );
         transform();
       }
     } catch (error) {
@@ -178,7 +196,33 @@
       if (lastNumberMatch) {
         const lastNumber = lastNumberMatch[0];
         const squareRoot = Math.sqrt(parseFloat(lastNumber));
-        backendVal = backendVal.replace(/(\d+(\.\d+)?|\.\d+)(?=\D*$)/, squareRoot.toString());
+        backendVal = backendVal.replace(
+          /(\d+(\.\d+)?|\.\d+)(?=\D*$)/,
+          squareRoot.toString()
+        );
+        transform();
+      }
+    } catch (error) {
+      console.error(error);
+      displayValue = "Error";
+      errorOccured = true;
+    }
+  }
+
+  function negateValue() {
+    if (errorOccured) {
+      clearDisplay();
+      errorOccured = false;
+    }
+    try {
+      const lastNumberMatch = backendVal.match(/(\-?\d+(\.\d+)?|\.\d+)(?=\D*$)/);
+      if (lastNumberMatch) {
+        const lastNumber = lastNumberMatch[0];
+        const negatedNumber = parseFloat(lastNumber) * -1;
+        backendVal = backendVal.replace(
+          /(\-?\d+(\.\d+)?|\.\d+)(?=\D*$)/,
+          negatedNumber.toString()
+        );
         transform();
       }
     } catch (error) {
@@ -200,19 +244,26 @@
     <PageLoader />
   {:else}
     <div class="content show">
-      <div class="calculator bg-gray-800 rounded-lg p-8 shadow-lg text-white text-center flex">
+      <div
+        class="calculator bg-gray-800 rounded-lg p-8 shadow-lg text-white text-center flex"
+      >
         <div>
           <input
             type="text"
             bind:value={displayValue}
             disabled
-            class="w-full px-4 py-2 mb-4 bg-gray-700 rounded-lg text-right text-white text-2xl outline-none"
+            style="background-color: #A2C9E6;"
+            class="w-full px-4 py-2 mb-4 rounded-lg text-right text-black text-2xl outline-none"
           />
           <div class="grid grid-cols-4 gap-5">
             <button class="btn" on:click={() => appendValue("(")}>(</button>
             <button class="btn" on:click={() => appendValue(")")}>)</button>
             <button class="btn" on:click={clearDisplay}>C</button>
             <button class="btn" on:click={deleteChar}>DEL</button>
+            <button class="btn" on:click={() => appendValue("^")}>^</button>
+            <button class="btn" on:click={appendSquare}>x²</button>
+            <button class="btn" on:click={appendSquareRoot}>√</button>
+            <button class="btn" on:click={negateValue}>±</button>
             <button class="btn" on:click={() => appendValue("7")}>7</button>
             <button class="btn" on:click={() => appendValue("8")}>8</button>
             <button class="btn" on:click={() => appendValue("9")}>9</button>
@@ -225,13 +276,11 @@
             <button class="btn" on:click={() => appendValue("2")}>2</button>
             <button class="btn" on:click={() => appendValue("3")}>3</button>
             <button class="btn" on:click={() => appendValue("-")}>-</button>
-            <button class="btn" on:click={() => appendValue("0")}>0</button>
             <button class="btn" on:click={() => appendValue(".")}>,</button>
+            <button class="btn" on:click={() => appendValue("0")}>0</button>
+
             <button class="btn" on:click={calculate}>=</button>
             <button class="btn" on:click={() => appendValue("+")}>+</button>
-            <button class="btn" on:click={() => appendValue("^")}>^</button> <!-- Potenzierungssymbol hinzufügen -->
-            <button class="btn" on:click={appendSquare}>x²</button> <!-- Quadratsymbol hinzufügen -->
-            <button class="btn" on:click={appendSquareRoot}>√</button> <!-- Wurzelsymbol hinzufügen -->
           </div>
         </div>
       </div>

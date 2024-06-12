@@ -13,15 +13,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
   display: flex;
@@ -51,7 +42,7 @@ button {
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: bold;
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
@@ -59,6 +50,7 @@ button {
 }
 button:hover {
   border-color: #646cff;
+  font-weight: bolder;
 }
 button:focus,
 button:focus-visible {
